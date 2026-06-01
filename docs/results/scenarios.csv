@@ -1,0 +1,7 @@
+scenario_id,description,expected,actual,passed,block_id
+E1,Dato íntegro (sin modificación),INTEGRO,INTEGRO,YES,0xf3f510a70d2a47828af9a7039f19c9b316c686c401fa08368ae094aa2f9ed876
+E2,Alteración del valor de temperatura,ALTERADO,ALTERADO,YES,0xf3f510a70d2a47828af9a7039f19c9b316c686c401fa08368ae094aa2f9ed876
+E3,Alteración del timestamp,ALTERADO,ALTERADO,YES,0xf3f510a70d2a47828af9a7039f19c9b316c686c401fa08368ae094aa2f9ed876
+E4,Alteración del sensor_id,ALTERADO,ALTERADO,YES,0xf3f510a70d2a47828af9a7039f19c9b316c686c401fa08368ae094aa2f9ed876
+E5,Bloque inexistente (block_id inválido),ERROR_HANDLED,ERROR_HANDLED,YES,INVALID_BLOCK_ID_123
+E6,Alteración del valor de humedad,ALTERADO,ALTERADO,YES,0xf3f510a70d2a47828af9a7039f19c9b316c686c401fa08368ae094aa2f9ed876

@@ -1,0 +1,26 @@
+BENCHMARK SUMMARY
+================================================================
+T_reg (latencia de registro) (n=100):
+  mean    = 3.92 ms
+  median  = 1.98 ms
+  p95     = 3.13 ms
+  std     = 18.42 ms
+  min/max = 0.92 / 187.09 ms
+
+T_ver (latencia de verificación) (n=100):
+  mean    = 0.65 ms
+  median  = 0.56 ms
+  p95     = 1.25 ms
+  std     = 0.27 ms
+  min/max = 0.36 / 1.95 ms
+
+Tasa de éxito de registro+verificación: 100.0% (100/100 ejecuciones)
+
+Scenarios: 6/6 PASSED
+
+  [PASS] E1: Dato íntegro (sin modificación) | expected=INTEGRO actual=INTEGRO
+  [PASS] E2: Alteración del valor de temperatura | expected=ALTERADO actual=ALTERADO
+  [PASS] E3: Alteración del timestamp | expected=ALTERADO actual=ALTERADO
+  [PASS] E4: Alteración del sensor_id | expected=ALTERADO actual=ALTERADO
+  [PASS] E5: Bloque inexistente (block_id inválido) | expected=ERROR_HANDLED actual=ERROR_HANDLED
+  [PASS] E6: Alteración del valor de humedad | expected=ALTERADO actual=ALTERADO
