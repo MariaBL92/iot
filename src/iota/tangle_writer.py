@@ -22,19 +22,19 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Configuration constants
+# Constantes de configuración
 # ---------------------------------------------------------------------------
 
-RETRY_DELAYS_SECONDS = (1.0, 3.0, 9.0)  # exponential backoff: 1s, 3s, 9s
-PUBLISH_TIMEOUT_SECONDS = 30.0          # informational; the SDK has its own
+RETRY_DELAYS_SECONDS = (1.0, 3.0, 9.0)  # eretroceso exponencial: 1 s, 3 s, 9 s
+PUBLISH_TIMEOUT_SECONDS = 30.0          # informativo; el SDK tiene su propio tiempo de espera
 
 
 class TangleWriteError(RuntimeError):
-    """Raised when a payload cannot be published to the Tangle after retries."""
+    """Se lanza cuando un payload no puede publicarse en el Tangle después de agotar todos los reintentos."""
 
 
 # ---------------------------------------------------------------------------
-# Core operation
+#OPERACION PRINCIPAL
 # ---------------------------------------------------------------------------
 
 def register_in_tangle(payload: dict, client=None) -> str:
@@ -81,10 +81,10 @@ TangleWriteError: si se agotan todos los reintentos sin éxito.
 
 
 def _attempt_delays():
-    """Yield (delay) values for the attempt sequence.
+    """Genera los tiempos de espera (delay) para la secuencia de intentos.
 
-    The first attempt has no preceding delay (yielded as 0). Subsequent
-    attempts use the configured retry delays.
+El primer intento no tiene espera previa (se devuelve como 0). Los
+intentos posteriores utilizan los tiempos de reintento configurados.
     """
     yield 0.0
     for d in RETRY_DELAYS_SECONDS:
@@ -92,16 +92,16 @@ def _attempt_delays():
 
 
 def _do_post(client, tag_hex: str, data_hex: str) -> str:
-    """Execute a single Tangle post and return the resulting block_id.
+    """Ejecuta una única publicación en el Tangle y devuelve el block_id resultante.
 
-    Isolated as a separate function so that tests can mock the network call
-    without monkey-patching iota-sdk internals.
+Se encuentra aislada como una función independiente para que las pruebas puedan simular la llamada 
+de red mediante mocks, sin necesidad de modificar(monkey-patching) los componentes internos de iota-sdk.
     """
-    # iota-sdk 1.1.3 returns (block_id, block) for build_and_post_block.
-    # The Block may have a tagged_data payload depending on inputs.
+    # iota-sdk 1.1.3 devuelve (block_id, block) para build_and_post_block.
+    # El bloque puede contener un payload tagged_data dependiendo de los datos de entrada.
     result = client.build_and_post_block(tag=tag_hex, data=data_hex)
 
-    # Defensive parsing: handle both tuple and dict-like returns.
+    # Análisis defensivo: manejar tanto valores de retorno tipo tupla como valores de retorno similares a diccionarios.
     if isinstance(result, (tuple, list)) and len(result) >= 1:
         block_id = result[0]
     elif isinstance(result, str):
@@ -115,23 +115,23 @@ def _do_post(client, tag_hex: str, data_hex: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Optional: fetch a previously-posted block (used by the verifier)
+#Opcional: recuperar un bloque publicado previamente (utilizado por el verificador).
 # ---------------------------------------------------------------------------
 
 def fetch_block_data(block_id: str, client=None) -> dict:
     """
-    Retrieve a block from the Tangle and return its payload as a dict.
+    Recupera un bloque del Tangle y devuelve su payload como un diccionario.
+Args:
+    block_id: El block_id devuelto por register_in_tangle().
+    client:   Cliente IOTA opcional (por defecto se utiliza la instancia singleton).
 
-    Args:
-        block_id: The block_id returned by register_in_tangle().
-        client:   Optional IOTA client (defaults to singleton).
+Returns:
+    El diccionario que fue registrado originalmente
+    ({hash, sensor_id, timestamp}).
 
-    Returns:
-        The dict that was originally registered ({hash, sensor_id, timestamp}).
-
-    Raises:
-        TangleWriteError: if the block cannot be retrieved or its payload
-                          cannot be decoded as the expected JSON.
+Raises:
+    TangleWriteError: Si el bloque no puede recuperarse o si su payload
+                      no puede decodificarse como el JSON esperado.
     """
     if client is None:
         client = get_iota_client()
@@ -155,7 +155,7 @@ def fetch_block_data(block_id: str, client=None) -> dict:
 
 
 def _extract_payload_data(block) -> str:
-    """Best-effort extraction of the hex-encoded payload data from a block."""
+    """Extrae, en la medida de lo posible (best-effort), los datos del payload codificados en hexadecimal desde un bloque."""
     # Attribute style: block.payload.data
     payload = getattr(block, "payload", None) or (
         block.get("payload") if isinstance(block, dict) else None
