@@ -1,12 +1,12 @@
 """
-Wraooer ligero sobre iota-sdk para centralizar la configuración del nodo, funciones auxiliares
-de codificación, y las importaciones perezosas (lazy imports), de modo que las pruebas unitarias
-puedan ejecutarsesin tener el SDK instalado.
+Wrapper ligero sobre iota-sdk para centralizar la configuración del nodo, las funciones auxiliares 
+de codificación y las importaciones perezosas (lazy imports), de modo que las pruebas unitarias 
+puedan ejecutarse sin tener el SDK instalado.
 
-El paquete Python iota-sdk compila bindings nativos de Rust al hacer pip install,
-lo cual es una dependencia pesada. Al importarlo de forma perezosa dentro de las funciones,
-mantenemos el resto del código importable en entornos donde iota-sdk
-no está disponible (por ejemplo, contenedores de CI, laptops de colaboradores sin Rust)
+El paquete Python iota-sdk compila bindings nativos de Rust durante la instalación con pip, 
+lo cual lo convierte en una dependencia pesada. Al importarlo de forma perezosa dentro de las 
+funciones, se mantiene el resto del código importable en entornos donde iota-sdk no está disponible, 
+por ejemplo, contenedores de CI o laptops de colaboradores sin Rust.
 """
 from __future__ import annotations
 
@@ -29,14 +29,14 @@ _client = None
 def _build_client():
     """Lazy import + construct the iota-sdk Client.
 
-    Raises ImportError with a helpful message if iota-sdk is not installed.
+        Lanza una excepción ImportError con un mensaje informativo si iota-sdkno está instalado.   
     """
     try:
         from iota_sdk import Client
     except ImportError as exc:
         raise ImportError(
-            "iota-sdk is not installed. Run `pip install iota-sdk==1.1.3` "
-            "(requires Rust to be present on the system to compile bindings)."
+            "iota-sdk no está instalado. Ejecute `pip install iota-sdk==1.1.3` "
+            "(requiere que Rust esté instalado en el sistema para compilar los bindings)."
         ) from exc
 
     node_url = os.getenv("IOTA_NODE_URL", "https://api.testnet.iota.cafe")
@@ -45,7 +45,7 @@ def _build_client():
 
 
 def get_iota_client():
-    """Return the module-level IOTA client, building it once on first call."""
+    """Devuelve el cliente IOTA a nivel de módulo, creándolo una única vez durante la primera llamada."""
     global _client
     if _client is None:
         _client = _build_client()
@@ -53,7 +53,7 @@ def get_iota_client():
 
 
 def reset_client() -> None:
-    """Reset the singleton. Used by tests that swap implementations in/out."""
+    """Reinicia la instancia única (singleton). Se utiliza en pruebas que sustituyen dinámicamente distintas implementaciones."""
     global _client
     _client = None
 
@@ -63,42 +63,42 @@ def reset_client() -> None:
 # ---------------------------------------------------------------------------
 
 def utf8_to_hex(s: str) -> str:
-    """Encode a UTF-8 string to a '0x'-prefixed hex string.
+    """Codifica una cadena UTF-8 como una cadena hexadecimal con prefijo '0x'.
 
-    iota-sdk 1.1.3 requires hex strings for tag and data to carry the
-    canonical '0x' prefix; passing bare hex raises
-    'Invalid hex prefix: expected `0x`'.
+iota-sdk 1.1.3 requiere cadenas hexadecimales para tag y data con el
+prefijo canónico '0x'; pasar hexadecimal sin prefijo lanza el error
+'Invalid hex prefix: expected `0x`'.
     """
     return "0x" + s.encode("utf-8").hex()
 
 
 def hex_to_utf8(h: str) -> str:
-    """Decode a hex string back to UTF-8 text."""
-    # iota-sdk sometimes returns '0x'-prefixed hex; strip it if present.
+    """Decodifica una cadena hexadecimal y la convierte nuevamente a texto UTF-8."""
+    # iota-sdk a veces devuelve cadenas hexadecimales con el prefijo '0x'; elimínelo si está presente.
     if h.startswith("0x"):
         h = h[2:]
     return bytes.fromhex(h).decode("utf-8")
 
 
 def dict_to_payload_hex(payload: dict) -> str:
-    """Serialize a dict to canonical JSON, then to hex for Tangle storage."""
+    """Serializa un diccionario a JSON canónico y luego a hexadecimal para su almacenamiento en el Tangle."""
     return utf8_to_hex(json.dumps(payload, separators=(",", ":")))
 
 
 def payload_hex_to_dict(payload_hex: str) -> dict:
-    """Inverse of dict_to_payload_hex: hex -> UTF-8 JSON -> dict."""
+    """Operación inversa de dict_to_payload_hex: hexadecimal -> JSON UTF-8 -> diccionario."""
     return json.loads(hex_to_utf8(payload_hex))
 
 
 # ---------------------------------------------------------------------------
-# Tag (constant per project; cached at module import)
+# Tag  (constante para todo el proyecto; almacenada en caché al importar el módulo).
 # ---------------------------------------------------------------------------
 
 def get_tag() -> str:
-    """Return the IOTA tag in UTF-8 form (from env or default)."""
+    """Devuelve la etiqueta (tag) de IOTA en formato UTF-8 (obtenida desde una variable de entorno o usando el valor predeterminado).."""
     return os.getenv("IOTA_TAG", "IOT-INTEGRITY")
 
 
 def get_tag_hex() -> str:
-    """Return the IOTA tag hex-encoded for the SDK."""
+    """Devuelve la etiqueta (tag) de IOTA codificada en hexadecimal para su uso con el SDK."""
     return utf8_to_hex(get_tag())
