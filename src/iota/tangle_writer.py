@@ -1,11 +1,10 @@
 """
-Tangle writer: publishes payloads to the IOTA Tangle as Tagged Data Blocks
-and returns the resulting block_id.
-
-Implements retry with exponential backoff because Testnet posts fail more
-often than one expects. Failure after all retries raises TangleWriteError,
-which callers can catch to mark the corresponding registry entry as
-"failed" without crashing the subscriber.
+Tangle writer: publica payloads en la Tangle de IOTA como Bloques de Datos Etiquetados (Tagged Data Blocks)
+y retorna el block_id resultante.
+Implementa reintentos con retroceso exponencial debido a que las publicaciones en Tangle fallan más
+a menudo de lo que uno esperaría. El fallo después de todos los reintentos lanza TangleWriteError,
+el cual los llamadores pueden capturar para marcar la entrada correspondiente del registro como
+"failed" (fallida) sin hacer que el subscriber colapse.
 """
 from __future__ import annotations
 
@@ -40,20 +39,18 @@ class TangleWriteError(RuntimeError):
 
 def register_in_tangle(payload: dict, client=None) -> str:
     """
-    Publish a payload to the Tangle as a Tagged Data Block.
+    Publica un payload en la Tangle como un Bloque de Datos Etiquetado (Tagged Data Block).
 
-    Args:
-        payload: A dict with keys {hash, sensor_id, timestamp}. The dict is
-                 serialized to canonical JSON, hex-encoded and stored as the
-                 Block's data field.
-        client:  Optional IOTA client to use. Defaults to the module-level
-                 singleton; tests pass a mock here.
+Args: payload: Un diccionario con las claves {hash, sensor_id, timestamp}. El diccionario es
+serializado a JSON canónico, codificado en hexadecimal y almacenado como el
+campo de datos del Bloque. client:  Cliente de IOTA opcional a utilizar. Por defecto usa el singleton a nivel
+de módulo; las pruebas pasan un mock aquí.
 
-    Returns:
-        The Tangle block_id (hex string) of the published block.
+Returns:
+El block_id de la Tangle (cadena hexadecimal) del bloque publicado.
 
-    Raises:
-        TangleWriteError: if all retries are exhausted without success.
+Raises:
+TangleWriteError: si se agotan todos los reintentos sin éxito.
     """
     if client is None:
         client = get_iota_client()
