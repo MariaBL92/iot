@@ -1,12 +1,12 @@
 """
-Thin wrapper over `iota-sdk` to centralize node configuration, encoding
-helpers, and lazy imports so that unit tests can run without the SDK
-installed.
+Wraooer ligero sobre iota-sdk para centralizar la configuración del nodo, funciones auxiliares
+de codificación, y las importaciones perezosas (lazy imports), de modo que las pruebas unitarias
+puedan ejecutarsesin tener el SDK instalado.
 
-The iota-sdk Python package compiles native Rust bindings on `pip install`,
-which is a heavy dependency. By importing it lazily inside functions we
-keep the rest of the codebase importable in environments where iota-sdk
-is not available (e.g. CI containers, contributor laptops without Rust).
+El paquete Python iota-sdk compila bindings nativos de Rust al hacer pip install,
+lo cual es una dependencia pesada. Al importarlo de forma perezosa dentro de las funciones,
+mantenemos el resto del código importable en entornos donde iota-sdk
+no está disponible (por ejemplo, contenedores de CI, laptops de colaboradores sin Rust)
 """
 from __future__ import annotations
 
