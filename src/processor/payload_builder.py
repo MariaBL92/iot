@@ -11,13 +11,13 @@ from src.processor.hash_generator import generate_hash
 def build_tangle_payload(sensor_data: dict) -> dict:
     """Construye el diccionario que será registrado en el Tangle.
 
-    Argumentos:
+    Args:
         sensor_data: Debe contener 'sensor_id' y 'timestamp'.
 
-    Retorna:
+    Returns:
         Un diccionario con las claves 'hash', 'sensor_id', 'timestamp'.
 
-    Lanza:
+    Raises:
         KeyError: si faltan 'sensor_id' o 'timestamp'.
     """
     if "sensor_id" not in sensor_data:
