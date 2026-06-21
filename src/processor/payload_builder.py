@@ -1,7 +1,7 @@
 """
-Tangle payload builder. Materializes the privacy boundary: only {hash,
-sensor_id, timestamp} ever leaves the local environment. Raw sensor
-values stay in the local registry.
+Constructor de payload para el Tangle.  
+Materializa el límite de privacidad: únicamente {hash, sensor_id, timestamp} salen del entorno local.  
+Los valores crudos de los sensores permanecen en el registro local..
 """
 from __future__ import annotations
 
@@ -9,16 +9,16 @@ from src.processor.hash_generator import generate_hash
 
 
 def build_tangle_payload(sensor_data: dict) -> dict:
-    """Build the dict to be registered on the Tangle.
+    """Construye el diccionario que será registrado en el Tangle.
 
-    Args:
-        sensor_data: Must contain 'sensor_id' and 'timestamp'.
+    Argumentos:
+        sensor_data: Debe contener 'sensor_id' y 'timestamp'.
 
-    Returns:
-        A dict with the keys 'hash', 'sensor_id', 'timestamp'.
+    Retorna:
+        Un diccionario con las claves 'hash', 'sensor_id', 'timestamp'.
 
-    Raises:
-        KeyError: if 'sensor_id' or 'timestamp' are missing.
+    Lanza:
+        KeyError: si faltan 'sensor_id' o 'timestamp'.
     """
     if "sensor_id" not in sensor_data:
         raise KeyError("sensor_data must contain 'sensor_id'")
