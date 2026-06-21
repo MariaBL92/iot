@@ -1,16 +1,16 @@
 """
-Command-line interface for the integrity verifier.
+Interfaz de línea de comandos para el verificador de integridad.
 
-Examples:
-    # Verify a block_id against the data recorded in the local registry
+Ejemplos:
+    # Verificar un block_id contra los datos registrados en el registro local
     python verify_cli.py --block-id 0x123abc...
-
-    # Verify a block_id against an external data file (e.g. to test
-    # the ALTERADO branch by editing a copy of raw_data and pointing here)
+    # Verificar un block_id contra un archivo de datos externo (por ejemplo,
+    # para probar la rama ALTERADO editando una copia de raw_data y
+    # apuntando a ella desde aquí)
     python verify_cli.py --block-id 0x123abc... --data-file /tmp/altered.json
 
-The exit code is 0 when the verdict is INTEGRO, 1 when ALTERADO, and 2
-on any error.
+El código de salida es 0 cuando el resultado es INTEGRO, 1 cuando es
+ALTERADO y 2 ante cualquier error.
 """
 from __future__ import annotations
 
