@@ -1,9 +1,9 @@
 """
-SHA-256 hash generation with canonical JSON serialization.
+Generación de hash SHA-256 con serialización JSON canónica.
 
-CRITICAL CONTRACT: every dict that is hashed MUST be serialized through
-canonical_json to guarantee that semantically equal payloads produce
-identical hashes. Direct calls to json.dumps are forbidden in hash zones.
+CONTRATO CRÍTICO: todo diccionario que sea hasheado DEBE serializarse mediante
+canonical_json para garantizar que payloads semánticamente equivalentes produzcan
+hashes idénticos. Las llamadas directas a json.dumps están prohibidas en las zonas de hash.
 """
 from __future__ import annotations
 
@@ -12,10 +12,10 @@ import json
 
 
 def canonical_json(data: dict) -> str:
-    """Serialize a dict to JSON in canonical form (sort_keys, compact)."""
+    ""Serializa un diccionario a JSON en forma canónica(sort_keys, compact).""
     return json.dumps(data, sort_keys=True, separators=(",", ":"))
 
 
 def generate_hash(data: dict) -> str:
-    """Compute the SHA-256 hash of a dict, in canonical form."""
+    ""Calcula el hash SHA-256 de un diccionario en forma canónica.""
     return hashlib.sha256(canonical_json(data).encode("utf-8")).hexdigest()
