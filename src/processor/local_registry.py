@@ -1,7 +1,7 @@
 """
-Local registry: persistent storage of sensor readings and their hashes.
+Registro local: almacenamiento persistente de lecturas de sensores y sus hashes.
 
-File format: a JSON array of entries. Each entry has the shape:
+Formato del archivo: un arreglo JSON de entradas. Cada entrada tiene la forma
     {
         "block_id":       Optional[str],
         "hash":           str,
@@ -11,8 +11,8 @@ File format: a JSON array of entries. Each entry has the shape:
         "status":         "pending" | "registered" | "failed"
     }
 
-The subscriber is the only writer, so simple atomic writes (temp file
-+ os.replace) are sufficient without file locking.
+El suscriptor es el único escritor, por lo que las escrituras atómicas simples 
+(temp file + os.replace) son suficientes sin bloqueo de archivo.
 """
 from __future__ import annotations
 
@@ -85,7 +85,7 @@ class LocalRegistry:
 
     def update_block_id(self, hash_value: str, block_id: Optional[str],
                         status: str = "registered") -> bool:
-        """Update the block_id and status of the most recent matching entry."""
+        """Actualiza el block_id y el estado de la entrada coincidente más reciente.."""
         entries = self._load()
         for entry in reversed(entries):
             if entry.get("hash") == hash_value:
