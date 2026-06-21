@@ -1,15 +1,15 @@
 """
-Integrity verification: given a block_id and a candidate data dict,
-determine whether the data is intact.
+Verificación de integridad: dado un block_id y un diccionario de datos
+candidato, determina si los datos permanecen íntegros.
 
-The verifier closes the loop of the architecture: it fetches the block
-from the Tangle, extracts the hash that was stored there at registration
-time, recomputes the hash of the candidate data using the exact same
-canonical-JSON + SHA-256 path used by the processor in Layer 2, and
-compares the two.
+El verificador cierra el ciclo de la arquitectura: recupera el bloque desde el Tangle, 
+extrae el hash que fue almacenado durante el registro, recalcula el hash de los datos 
+candidatos utilizando exactamente el mismo proceso de JSON canónico + SHA-256 empleado 
+por el procesador en la Capa 2 y compara ambos valores.
 
-The output is a structured dict with both hashes plus a verdict, so the
-caller can log, display, or persist the evidence for audit.
+La salida es un diccionario estructurado que contiene ambos hashes junto
+con un veredicto, de modo que el llamador pueda registrar, mostrar o
+almacenar la evidencia con fines de auditoría.
 """
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Verdict constants
+#  Constantes utilizadas para el veredicto de integridad
 # ---------------------------------------------------------------------------
 
 INTEGRO = "INTEGRO"
@@ -32,9 +32,9 @@ ERROR = "ERROR"
 
 
 class VerificationError(RuntimeError):
-    """Raised when verification cannot be carried out (block fetch failed,
-    payload malformed, etc.). Distinct from the ALTERADO verdict, which
-    means verification completed and detected a mismatch."""
+    """Se lanza cuando la verificación no puede llevarse a cabo (por ejemplo, si falla la recuperación 
+    del bloque, el payload está mal formado, etc.). Se diferencia del veredicto ALTERADO, que indica que la 
+    verificación se completó correctamente y detectó una discrepancia."""
 
 
 # ---------------------------------------------------------------------------
@@ -47,30 +47,31 @@ def verify_integrity(
     fetch_fn=None,
 ) -> dict:
     """
-    Verify whether `data` matches the hash stored at `block_id` on the Tangle.
+   Verifica si `data` coincide con el hash almacenado en `block_id` dentro del Tangle.
 
-    Args:
-        block_id: The Tangle block_id where the hash was registered.
-        data: The candidate data to verify. The hash is recomputed over
-              this exact dict and compared to what's stored on-chain.
-        fetch_fn: Optional callable(block_id) -> dict that returns the
-                  payload originally written. If None, uses tangle_writer's
-                  fetch_block_data() against the real network.
+Args:
+    block_id: El block_id del Tangle donde se registró el hash.
+    data: Los datos candidatos a verificar. El hash se recalcula sobre este 
+        diccionario exacto y se compara con el valor almacenado en la cadena.
+    fetch_fn: Función opcional callable(block_id) -> dict que devuelve
+              el payload originalmente registrado. Si es None, se utiliza
+              fetch_block_data() de tangle_writer contra la red real.
 
-    Returns:
-        A dict with the keys:
-            status (str):     "INTEGRO" or "ALTERADO"
-            stored (str):     hash recovered from the Tangle
-            computed (str):   hash recomputed from `data`
-            match (bool):     True iff status == "INTEGRO"
-            block_id (str):   echoed back for trace
-            sensor_id (str):  recovered from the Tangle payload
-            timestamp (str):  recovered from the Tangle payload
+Returns:
+    Un diccionario con las siguientes claves:
+        status (str):      "INTEGRO" o "ALTERADO"
+        stored (str):      hash recuperado del Tangle
+        computed (str):    hash recalculado a partir de `data`
+        match (bool):      True si y solo si status == "INTEGRO"
+        block_id (str):    block_id devuelto para trazabilidad
+        sensor_id (str):   recuperado del payload almacenado en el Tangle
+        timestamp (str):   recuperado del payload almacenado en el Tangle
 
-    Raises:
-        VerificationError: if the block cannot be fetched or its payload
-                           is malformed. Note: an ALTERADO verdict is NOT
-                           an error; it is a successful detection.
+Raises:
+    VerificationError: Si el bloque no puede recuperarse o si su payload
+                       está mal formado. Nótese que un veredicto
+                       ALTERADO NO es un error; representa una detección
+                       exitosa de una discrepancia.
     """
     if fetch_fn is None:
         from src.iota.tangle_writer import fetch_block_data
@@ -83,7 +84,7 @@ def verify_integrity(
             f"Could not fetch block {block_id} from the Tangle: {exc}"
         ) from exc
 
-    # Defensive parsing of the recovered payload.
+    # Análisis defensivo del payload recuperado.
     if not isinstance(tangle_payload, dict):
         raise VerificationError(
             f"Tangle payload is not a dict (got {type(tangle_payload).__name__})"
@@ -94,9 +95,9 @@ def verify_integrity(
             f"Tangle payload of block {block_id} has no 'hash' field"
         )
 
-    # Recompute the hash of the candidate data. This is the same path used
-    # by the processor in Layer 2; consistency is guaranteed by both sides
-    # using generate_hash() from hash_generator.py.
+    # Recalcular el hash de los datos candidatos. Este es el mismo proceso
+    # utilizado por el procesador en la Capa 2; la consistencia está garantizada
+    # porque ambos componentes utilizan generate_hash() de hash_generator.py.
     computed_hash = generate_hash(data)
 
     match = (stored_hash == computed_hash)
@@ -117,7 +118,7 @@ def verify_integrity(
 
 
 # ---------------------------------------------------------------------------
-# Convenience wrapper: verify against the local registry
+#Función auxiliar: verifica utilizando el registro local.
 # ---------------------------------------------------------------------------
 
 def verify_from_registry(
@@ -126,17 +127,17 @@ def verify_from_registry(
     fetch_fn=None,
 ) -> dict:
     """
-    Recover the original raw_data from the local registry by block_id, then
-    verify against the Tangle. Useful for routine integrity audits.
+   Recupera los datos originales (raw_data) desde el registro local a partir del block_id y, posteriormente, 
+   verifica su integridad contra el Tangle. Resulta útil para auditorías rutinarias de integridad.
 
-    Args:
-        block_id: The Tangle block_id to verify.
-        registry: A LocalRegistry instance.
-        fetch_fn: Optional callable, as in verify_integrity().
+Args:
+    block_id: El block_id del Tangle que se desea verificar.
+    registry: Una instancia de LocalRegistry.
+    fetch_fn: Función opcional, igual que en verify_integrity().
 
-    Returns:
-        Same verdict dict as verify_integrity(), or a dict with
-        status=NO_ENCONTRADO if the block_id is not in the registry.
+Returns:
+    El mismo diccionario de veredicto que devuelve verify_integrity(), o un diccionario con 
+    status=NO_ENCONTRADO si el block_id no existe en el registro local.
     """
     entry = registry.find_by_block_id(block_id)
     if entry is None:
