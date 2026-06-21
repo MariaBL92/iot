@@ -1,9 +1,10 @@
 """
-Sensor simulator for the IoT integrity verification project.
+Simulador de sensores para el proyecto de verificación de integridad en IoT.
 
-Generates synthetic temperature and humidity readings and publishes them
-to an MQTT broker for downstream processing. Part of Layer 1 of the
-four-layer architecture.
+Este módulo genera lecturas sintéticas de temperatura y humedad y las publica
+en un broker MQTT para su posterior procesamiento. Representa la Capa 1 de la
+arquitectura propuesta de cuatro capas, correspondiente a la fuente simulada
+de datos IoT.
 """
 from __future__ import annotations
 
@@ -29,8 +30,8 @@ HUMIDITY_MAX = 80.0
 
 
 def generate_sensor_data(sensor_id: str) -> dict:
-    """Generate a synthetic sensor reading with sensor_id, ISO 8601 UTC
-    timestamp, and temperature/humidity values rounded to one decimal."""
+    """Genera una lectura sintética de sensor con un identificador de sensor,una marca temporal UTC 
+    en formato ISO 8601  y valores de temperatura y humedad redondeados a un decimal."""
     return {
         "sensor_id": sensor_id,
         "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -65,7 +66,7 @@ def publish_loop(
     broker_host: str, broker_port: int, topic: str,
     max_messages: int | None = None,
 ) -> int:
-    """Continuously publish synthetic sensor data to the MQTT broker."""
+    """Publica continuamente datos sintéticos de sensores en el broker MQTT."""
     client = _build_client()
     client.connect(broker_host, broker_port, keepalive=60)
     client.loop_start()
@@ -111,7 +112,7 @@ def main(argv: list[str] | None = None) -> int:
     broker_port = int(os.getenv("MQTT_PORT", "1883"))
     topic = os.getenv("MQTT_TOPIC", "iot/sensors")
     logger.info(
-        "Starting simulator: sensor_id=%s, interval=%.1fs, broker=%s:%d, topic=%s",
+        "Iniciando simulador:  sensor_id=%s, interval=%.1fs, broker=%s:%d, topic=%s",
         args.sensor_id, args.interval, broker_host, broker_port, topic,
     )
     publish_loop(args.sensor_id, args.interval, broker_host, broker_port,
