@@ -1,19 +1,19 @@
 """
-MQTT subscriber that ingests sensor readings, computes their hashes,
-publishes them to the IOTA Tangle, and persists them locally.
+Suscriptor MQTT que ingesta lecturas de sensores, calcula sus hashes,
+las publica en el Tangle de IOTA y las persiste localmente.
 
-Flow per message:
-    1. Parse JSON from MQTT payload.
-    2. Compute SHA-256 hash of the sensor data.
-    3. Build the Tangle payload {hash, sensor_id, timestamp}.
-    4. Append an entry with status="pending" to the local registry.
-    5. Attempt to publish to Tangle (with retries inside register_in_tangle).
-    6a. On success: update the entry with block_id and status="registered".
-    6b. On failure: update the entry with status="failed" (block_id stays None).
+Flujo por mensaje:
+    1. Analizar el JSON recibido desde el payload MQTT.
+    2. Calcular el hash SHA-256 de los datos del sensor.
+    3. Construir el payload para el Tangle {hash, sensor_id, timestamp}.
+    4. Añadir una entrada con status="pending" al registro local.
+    5. Intentar publicar en el Tangle (con reintentos dentro de register_in_tangle).
+    6a. Si tiene éxito: actualizar la entrada con block_id y status="registered".
+    6b. Si falla: actualizar la entrada con status="failed" (block_id permanece en None).
 
-The Tangle publication can be disabled at runtime via the
---no-tangle flag, which is useful for local-only testing without
-network connectivity (e.g. during development of Layers 1 and 2).
+La publicación en el Tangle puede desactivarse en tiempo de ejecución mediante
+la bandera --no-tangle, lo cual es útil para pruebas únicamente locales sin
+conectividad de red, por ejemplo durante el desarrollo de las Capas 1 y 2.
 """
 from __future__ import annotations
 
@@ -35,13 +35,13 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-# Type alias for the Tangle-write hook (so tests can inject a mock).
-# Signature: callable(payload: dict) -> str  (returns block_id) or raises.
+# Alias de tipo para el gancho de escritura en el Tangle (permite que las pruebas inyecten una implementación simulada o mock).
+# Firma: callable(payload: dict) -> str(devuelve un block_id o lanza una excepción en caso de error).
 TangleWriteFn = Callable[[dict], str]
 
 
 # ---------------------------------------------------------------------------
-# Pure-ish message processing (testable without MQTT and without Tangle)
+#Procesamiento de mensajes casi puro (se puede probar sin MQTT y sin Tangle).
 # ---------------------------------------------------------------------------
 
 def process_message(
@@ -50,17 +50,17 @@ def process_message(
     tangle_write_fn: Optional[TangleWriteFn] = None,
 ) -> dict:
     """
-    Process a single MQTT payload and persist the resulting entry.
+    Procesa un único payload MQTT y persiste la entrada resultante.
 
-    Args:
-        payload_bytes: Raw MQTT message body (UTF-8 encoded JSON).
-        registry: Local registry where the new entry will be appended.
-        tangle_write_fn: Optional callable that publishes to the Tangle and
-            returns the block_id. If None, the entry stays in "pending" state.
+Args:
+    payload_bytes: Cuerpo bruto del mensaje MQTT JSON codificado en UTF-8.
+    registry: Registro local donde se añadirá la nueva entrada.
+    tangle_write_fn: Función opcional que publica en el Tangle y devuelve
+        el block_id. Si es None, la entrada permanece en estado "pending".
 
-    Returns:
-        The entry as it ended up in the registry (with status reflecting
-        the outcome of the Tangle write).
+Returns:
+    La entrada tal como quedó almacenada en el registro, con el estado
+    actualizado según el resultado de la escritura en el Tangle.
     """
     sensor_data = json.loads(payload_bytes.decode("utf-8"))
     sensor_hash = generate_hash(sensor_data)
@@ -133,7 +133,7 @@ def _on_message(client, userdata, msg):
 
 
 # ---------------------------------------------------------------------------
-# Subscriber lifecycle
+# Ciclo de vida del Subscriber 
 # ---------------------------------------------------------------------------
 
 def run_subscriber(
@@ -145,8 +145,8 @@ def run_subscriber(
 
     tangle_fn: Optional[TangleWriteFn] = None
     if tangle_enabled:
-        # Lazy import keeps iota-sdk out of the dependency graph for users
-        # who only want to run Layers 1 and 2.
+        # Lazy import evita que iota-sdk forme parte de las dependencias obligatorias para los usuarios que únicamente
+        # desean ejecutar las Capas 1 y 2.
         from src.iota.tangle_writer import register_in_tangle
         tangle_fn = register_in_tangle
         logger.info("Tangle registration ENABLED")
