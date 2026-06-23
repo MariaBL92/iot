@@ -28,7 +28,7 @@ Cuatro capas:
 
 ```bash
 git clone <url-del-repo>
-cd iot-iota-integrity
+cd iot
 
 python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
@@ -49,8 +49,8 @@ cd hornet/private_tangle
 # Bootstrap: genera genesis snapshot y claves (solo la primera vez)
 ./bootstrap.sh
 
-# Levantar 2 nodos + coordinador
-./run.sh 2
+# Levantar nodos 
+./run.sh 
 ```
 
 Verificar que está sano: abrí `http://localhost:8011` (credenciales: `admin` / `admin`). El indicador verde confirma que el coordinador está emitiendo milestones.
