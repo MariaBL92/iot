@@ -115,9 +115,10 @@ def plot_boxplot(t_reg, t_ver, out: Path) -> None:
     bp = ax.boxplot(data, tick_labels=labels, patch_artist=True,
                     boxprops={"facecolor": "#E1F5EE", "edgecolor": "#1D9E75"},
                     medianprops={"color": "#085041", "linewidth": 2})
-    ax.set_ylabel("Latencia (ms)")
+    ax.set_yscale("log")  # <-- NUEVO: escala logarítmica
+    ax.set_ylabel("Latencia (ms, escala logarítmica)")
     ax.set_title("Comparación de latencias")
-    ax.grid(axis="y", alpha=0.3)
+    ax.grid(axis="y", alpha=0.3, which="both")  # "both" para grid en escala log
     fig.tight_layout()
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, bbox_inches="tight", facecolor="white")
