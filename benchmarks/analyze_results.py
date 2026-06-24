@@ -138,14 +138,7 @@ def summarize_scenarios(path: Path) -> str:
         return "Scenarios CSV is empty.\n"
     passed = sum(1 for r in rows if r.get("passed") == "YES")
     total = len(rows)
-    lines = [f"Scenarios: {passed}/{total} PASSED", ""]
-    for r in rows:
-        marker = "PASS" if r.get("passed") == "YES" else "FAIL"
-        lines.append(
-            f"  [{marker}] {r['scenario_id']}: {r['description']}"
-            f" | expected={r['expected']} actual={r['actual']}"
-        )
-    return "\n".join(lines) + "\n"
+    return f"Scenarios: {passed}/{total} PASSED\n"
 
 
 # ---------------------------------------------------------------------------
