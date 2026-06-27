@@ -1,11 +1,12 @@
 """
-Results analyzer: reads latencies.csv and scenarios.csv and produces:
-    - Summary statistics (mean, median, p95, std) for T_reg and T_ver
-    - A histogram of T_reg and T_ver
-    - A boxplot comparing the two latency distributions
-    - A summary text file ready to paste into the TFM validation chapter
+Analizador de resultados: lee los archivos latencies.csv y scenarios.csv y genera:
 
-Outputs go to docs/results/figures/ and docs/results/summary.txt.
+Estadísticas descriptivas (media, mediana, percentil 95 y desviación estándar) para T_reg y T_ver.
+Un histograma de las latencias T_reg y T_ver.
+Un diagrama de cajas (boxplot) para comparar ambas distribuciones de latencia.
+Un archivo de resumen con los resultados, listo para incorporarse al capítulo de validación del TFM.
+
+Los resultados generados se almacenan en docs/results/figures/ y en docs/results/summary.txt.
 """
 from __future__ import annotations
 
@@ -22,11 +23,11 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Loading & stats
+# Carga de datos y cálculo de estadísticas
 # ---------------------------------------------------------------------------
 
 def load_latencies(path: Path) -> tuple[list[float], list[float], list[str]]:
-    """Load (T_reg, T_ver, status) lists from a latencies CSV."""
+    """Cargar listas (T_reg, T_ver, status) desde un archivo CSV de latencias.."""
     t_reg, t_ver, statuses = [], [], []
     with path.open("r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -76,7 +77,7 @@ def format_stats(label: str, s: dict) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Plots
+# GRAFICAS
 # ---------------------------------------------------------------------------
 
 def plot_histogram(t_reg, t_ver, out: Path) -> None:
@@ -127,7 +128,7 @@ def plot_boxplot(t_reg, t_ver, out: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Scenarios summary
+# RESUMEN
 # ---------------------------------------------------------------------------
 
 def summarize_scenarios(path: Path) -> str:
@@ -142,7 +143,7 @@ def summarize_scenarios(path: Path) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Main
+# PRINCIPAL
 # ---------------------------------------------------------------------------
 
 def main(argv=None) -> int:
