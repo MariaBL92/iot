@@ -1,20 +1,27 @@
 """
-Latency benchmark: measure T_reg (Tangle registration latency) and T_ver
-(verification latency) over N iterations.
+Análisis de latencia: mide T_reg (latencia de registro en el Tangle) y T_ver (latencia de verificación de integridad) durante N iteraciones.
 
-Each iteration:
-    1. Generates a synthetic sensor reading.
-    2. Builds the Tangle payload (hash + metadata).
-    3. Times the call to register_in_tangle() -> T_reg.
-    4. Times the call to verify_integrity() -> T_ver.
-    5. Appends a CSV row.
+En cada iteración se realizan las siguientes acciones:
 
-The CSV produced (default: docs/results/latencies.csv) has the columns:
-    iteration, sensor_id, T_reg_ms, T_ver_ms, status, block_id
+Se genera una lectura sintética de un sensor.
+Se construye la carga útil (payload) que se registrará en el Tangle, compuesta por el hash y los metadatos.
+Se mide el tiempo de ejecución de la función register_in_tangle(), obteniendo la latencia de registro (T_reg).
+Se mide el tiempo de ejecución de la función verify_integrity(), obteniendo la latencia de verificación (T_ver).
+Se añade una nueva fila al archivo CSV con los resultados de la iteración.
 
-Usage:
-    python -m benchmarks.measure_latency --n 100
-    python -m benchmarks.measure_latency --n 50 --output /tmp/latencies.csv
+El archivo CSV generado (por defecto: docs/results/latencies.csv) contiene las siguientes columnas:
+
+iteration: número de iteración.
+sensor_id: identificador del sensor.
+T_reg_ms: latencia de registro en el Tangle, expresada en milisegundos.
+T_ver_ms: latencia de verificación de integridad, expresada en milisegundos.
+status: resultado de la verificación (por ejemplo, íntegro o alterado).
+block_id: identificador del bloque o transacción registrado en el Tangle.
+
+Ejemplos de uso:
+
+python -m benchmarks.measure_latency --n 100
+python -m benchmarks.measure_latency --n 50 --output /tmp/latencies.csv
 """
 from __future__ import annotations
 
@@ -37,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 
 def measure_one(iteration: int, sensor_id: str) -> dict:
-    """Run one full register-then-verify cycle and return a measurement row."""
+    """Ejecuta un ciclo completo de registro y verificación, generando una fila con los resultados de las mediciones."""
     # Lazy imports so that running --help doesn't pull in iota-sdk.
     from src.iota.tangle_writer import (
         TangleWriteError,
@@ -116,7 +123,7 @@ def run(n: int, output: Path, sensor_id: str = "bench_sensor") -> None:
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Measure Tangle registration and verification latency over N iterations.",
+        description="Mide la latencia de registro en el Tangle y la latencia de verificación de la integridad durante N iteraciones.",
     )
     parser.add_argument("--n", type=int, default=100,
                         help="Number of iterations (default: 100)")
