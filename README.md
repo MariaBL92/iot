@@ -1,8 +1,8 @@
 # IoT-IOTA Integrity
 
-Verificación de integridad de datos IoT mediante registro de hashes en el Tangle de IOTA 2.0.
+Verificación de integridad de datos IoT mediante registro de hashes en una Private Tangle de IOTA
 
-Prototipo experimental: simula sensores IoT, calcula hashes SHA-256 de sus lecturas, los registra en la red IOTA 2.0 Testnet, y proporciona un módulo de verificación que detecta alteraciones comparando hashes.
+Prototipo experimental: simula sensores IoT, calcula hashes SHA-256 de sus lecturas, los registra en la red privada de IOTA y proporciona un módulo de verificación que detecta alteraciones comparando hashes.
 
 ## Arquitectura
 
@@ -141,7 +141,7 @@ make test-integration   # requieren broker + private tangle corriendo
 ## Estructura
 
 ```
-iot-iota-integrity/
+iot
 ├── src/
 │   ├── simulator/         # Capa 1
 │   ├── processor/         # Capa 2
