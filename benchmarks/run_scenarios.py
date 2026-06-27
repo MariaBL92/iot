@@ -1,21 +1,25 @@
 """
-Functional validation scenarios E1–E6.
+Escenarios de validación funcional E1–E6
 
-Each scenario registers a known sensor reading on the Tangle, then
-verifies it under different mutations to test the detection capability
-of the system. The output is a CSV with one row per scenario indicating
-whether the actual verdict matched the expected verdict.
+Cada escenario registra una lectura conocida de un sensor en el Tangle y, posteriormente, verifica su integridad aplicando diferentes modificaciones 
+con el fin de evaluar la capacidad del sistema para detectar alteraciones en los datos. Como resultado, se genera un archivo CSV con una fila por cada escenario, 
+indicando si el resultado obtenido coincide con el resultado esperado.
 
-Scenarios:
-    E1 - Integro:                 unmutated data, expect INTEGRO
-    E2 - Alteración numérica:     temperature mutated, expect ALTERADO
-    E3 - Alteración timestamp:    timestamp mutated, expect ALTERADO
-    E4 - Alteración sensor_id:    sensor_id mutated, expect ALTERADO
-    E5 - Bloque inexistente:      verify against an invalid block_id
-    E6 - Manipulación de campo:   humidity mutated, expect ALTERADO
+Escenarios evaluados:
+E1 – Datos íntegros: se utilizan los datos originales sin modificaciones. Resultado esperado: ÍNTEGRO.
+E2 – Alteración de un valor numérico: se modifica el valor de la temperatura. Resultado esperado: ALTERADO.
+E3 – Alteración de la marca temporal (timestamp): se modifica el valor del timestamp. Resultado esperado: ALTERADO.
+E4 – Alteración del identificador del sensor: se modifica el campo sensor_id. Resultado esperado: ALTERADO.
+E5 – Bloque inexistente: la verificación se realiza utilizando un block_id no válido. Resultado esperado: error o imposibilidad de verificar la integridad.
+E6 – Manipulación de un campo de datos: se modifica el valor de la humedad. Resultado esperado: ALTERADO.
 
-The CSV (default: docs/results/scenarios.csv) has the columns:
-    scenario_id, description, expected, actual, passed, block_id
+El archivo CSV generado (por defecto: docs/results/scenarios.csv) contiene las siguientes columnas:
+scenario_id: identificador del escenario.
+description: descripción del escenario evaluado.
+expected: resultado esperado.
+actual: resultado obtenido durante la ejecución.
+passed: indica si el resultado obtenido coincide con el esperado.
+block_id: identificador del bloque registrado en el Tangle.
 """
 from __future__ import annotations
 
@@ -36,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Scenario definitions
+# Definición de los escenarios
 # ---------------------------------------------------------------------------
 
 def _scenarios(base_data: dict) -> list[dict]:
@@ -88,7 +92,7 @@ def _scenarios(base_data: dict) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Execution
+# Ejecución
 # ---------------------------------------------------------------------------
 
 def run(output: Path, sensor_id: str = "scenario_sensor") -> None:
@@ -150,7 +154,7 @@ def run(output: Path, sensor_id: str = "scenario_sensor") -> None:
                     scenario_id, description, expected, actual,
                     "PASS" if passed else "FAIL")
 
-    # Write CSV
+    # Generar archivo CSV
     with output.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
