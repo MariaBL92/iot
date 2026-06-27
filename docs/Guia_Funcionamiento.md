@@ -399,7 +399,7 @@ Para que el sistema funcione de punta a punta se necesitan tres servicios activo
 | Servicio | Para qué | Cómo arrancarlo |
 |----------|----------|-----------------|
 | Mosquitto | Broker MQTT — el canal de mensajes | `mosquitto -v` |
-| Private Tangle (Docker) | Nodo IOTA local | `./run.sh 2` desde `hornet/private_tangle/` |
+| Private Tangle (Docker) | Nodo IOTA local | `./run.sh 4` desde `hornet/private_tangle/` |
 | El subscriber | Procesa los mensajes y los registra | `make subscribe` |
 
 El simulador (`make simulate`) puede arrancarse después para generar lecturas, y el verificador (`make verify BLOCK_ID=...`) puede usarse en cualquier momento una vez que haya entradas con `status=registered` en el registro.
