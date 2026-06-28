@@ -1,31 +1,33 @@
 """
-Escenarios de validación funcional E1–E6
+Functional validation scenarios E1-E6, repeated N times each for
+statistical significance.
 
-Cada escenario registra una lectura conocida de un sensor en el Tangle y, posteriormente, verifica su integridad aplicando diferentes modificaciones 
-con el fin de evaluar la capacidad del sistema para detectar alteraciones en los datos. Como resultado, se genera un archivo CSV con una fila por cada escenario, 
-indicando si el resultado obtenido coincide con el resultado esperado.
+Each repetition registers a FRESH synthetic sensor reading on the Tangle,
+then verifies it under each of the 6 mutation types (E1-E6) to test the
+detection capability of the system. The output is a CSV with one row per
+(repetition, scenario) pair indicating whether the actual verdict matched
+the expected verdict.
 
-Escenarios evaluados:
-E1 – Datos íntegros: se utilizan los datos originales sin modificaciones. Resultado esperado: ÍNTEGRO.
-E2 – Alteración de un valor numérico: se modifica el valor de la temperatura. Resultado esperado: ALTERADO.
-E3 – Alteración de la marca temporal (timestamp): se modifica el valor del timestamp. Resultado esperado: ALTERADO.
-E4 – Alteración del identificador del sensor: se modifica el campo sensor_id. Resultado esperado: ALTERADO.
-E5 – Bloque inexistente: la verificación se realiza utilizando un block_id no válido. Resultado esperado: error o imposibilidad de verificar la integridad.
-E6 – Manipulación de un campo de datos: se modifica el valor de la humedad. Resultado esperado: ALTERADO.
+Scenarios:
+    E1 - Integro:                 unmutated data, expect INTEGRO
+    E2 - Alteración numérica:     temperature mutated, expect ALTERADO
+    E3 - Alteración timestamp:    timestamp mutated, expect ALTERADO
+    E4 - Alteración sensor_id:    sensor_id mutated, expect ALTERADO
+    E5 - Bloque inexistente:      verify against an invalid block_id
+    E6 - Manipulación de campo:   humidity mutated, expect ALTERADO
 
-El archivo CSV generado (por defecto: docs/results/scenarios.csv) contiene las siguientes columnas:
-scenario_id: identificador del escenario.
-description: descripción del escenario evaluado.
-expected: resultado esperado.
-actual: resultado obtenido durante la ejecución.
-passed: indica si el resultado obtenido coincide con el esperado.
-block_id: identificador del bloque registrado en el Tangle.
+Usage:
+    python -m benchmarks.run_scenarios --n 100
+    python -m benchmarks.run_scenarios --n 50 --output docs/results/scenarios_n50.csv
+
+The CSV (default: docs/results/scenarios.csv) has the columns:
+    repetition, scenario_id, description, expected, actual, passed, block_id
 """
 from __future__ import annotations
 
 import argparse
-import csv
 import copy
+import csv
 import logging
 import sys
 from pathlib import Path
@@ -40,11 +42,11 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Definición de los escenarios
+# Scenario (mutation) definitions
 # ---------------------------------------------------------------------------
 
-def _scenarios(base_data: dict) -> list[dict]:
-    """Build the list of scenario specifications from a base reading."""
+def _mutations() -> list[dict]:
+    """Return the 6 mutation specifications, independent of any base reading."""
     return [
         {
             "id": "E1",
@@ -92,10 +94,10 @@ def _scenarios(base_data: dict) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Ejecución
+# Execution
 # ---------------------------------------------------------------------------
 
-def run(output: Path, sensor_id: str = "scenario_sensor") -> None:
+def run(n: int, output: Path, sensor_id_prefix: str = "scenario_sensor") -> None:
     from src.iota.tangle_writer import (
         TangleWriteError,
         fetch_block_data,
@@ -107,72 +109,103 @@ def run(output: Path, sensor_id: str = "scenario_sensor") -> None:
     )
 
     output.parent.mkdir(parents=True, exist_ok=True)
-    fieldnames = ["scenario_id", "description", "expected",
+    fieldnames = ["repetition", "scenario_id", "description", "expected",
                   "actual", "passed", "block_id"]
 
-    # Generate ONE base reading and register it once on the Tangle. All
-    # scenarios except E5 verify against this single block.
-    base_data = generate_sensor_data(sensor_id)
-    payload = build_tangle_payload(base_data)
-    logger.info("Registering base reading on Tangle...")
-    try:
-        block_id = register_in_tangle(payload)
-        logger.info("Base block_id: %s", block_id)
-    except TangleWriteError as exc:
-        logger.error("Could not register base reading: %s. Aborting scenarios.", exc)
-        return
-
-    scenarios = _scenarios(base_data)
+    mutations = _mutations()
     rows = []
-    for s in scenarios:
-        scenario_id = s["id"]
-        description = s["description"]
-        expected = s["expected"]
-        block_to_check = "INVALID_BLOCK_ID_123" if s["use_invalid_block_id"] else block_id
-        candidate = s["data_mutation"](copy.deepcopy(base_data))
 
+    for rep in range(1, n + 1):
+        sensor_id = f"{sensor_id_prefix}_{rep}"
+
+        # Fresh base reading per repetition, registered once on the Tangle.
+        base_data = generate_sensor_data(sensor_id)
+        payload = build_tangle_payload(base_data)
         try:
-            verdict = verify_integrity(block_to_check, candidate, fetch_fn=fetch_block_data)
-            actual = verdict["status"]
-        except VerificationError:
-            # For E5 this is the expected outcome (graceful error handling).
-            actual = "ERROR_HANDLED"
-        except Exception as exc:
-            logger.exception("Unexpected exception in scenario %s", scenario_id)
-            actual = f"EXCEPTION: {exc}"
+            block_id = register_in_tangle(payload)
+        except TangleWriteError as exc:
+            logger.error("Rep %d: could not register base reading: %s. Skipping.",
+                         rep, exc)
+            continue
 
-        passed = (actual == expected)
-        rows.append({
-            "scenario_id": scenario_id,
-            "description": description,
-            "expected":    expected,
-            "actual":      actual,
-            "passed":      "YES" if passed else "NO",
-            "block_id":    block_to_check,
-        })
-        logger.info("%s | %s | expected=%s actual=%s | %s",
-                    scenario_id, description, expected, actual,
-                    "PASS" if passed else "FAIL")
+        for m in mutations:
+            scenario_id = m["id"]
+            description = m["description"]
+            expected = m["expected"]
+            block_to_check = "INVALID_BLOCK_ID_123" if m["use_invalid_block_id"] else block_id
+            candidate = m["data_mutation"](copy.deepcopy(base_data))
 
-    # Generar archivo CSV
+            try:
+                verdict = verify_integrity(block_to_check, candidate, fetch_fn=fetch_block_data)
+                actual = verdict["status"]
+            except VerificationError:
+                actual = "ERROR_HANDLED"
+            except Exception as exc:
+                logger.exception("Unexpected exception in rep %d, scenario %s",
+                                 rep, scenario_id)
+                actual = f"EXCEPTION: {exc}"
+
+            passed = (actual == expected)
+            rows.append({
+                "repetition":  rep,
+                "scenario_id": scenario_id,
+                "description": description,
+                "expected":    expected,
+                "actual":      actual,
+                "passed":      "YES" if passed else "NO",
+                "block_id":    block_to_check,
+            })
+            logger.info("[rep %d/%d] %s | expected=%s actual=%s | %s",
+                        rep, n, scenario_id, expected, actual,
+                        "PASS" if passed else "FAIL")
+
+    # Write CSV
     with output.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
 
+    # --- Summary: overall + per scenario type ---
     total = len(rows)
-    passed = sum(1 for r in rows if r["passed"] == "YES")
-    logger.info("Summary: %d/%d scenarios PASSED. Output: %s",
-                passed, total, output)
+    passed_total = sum(1 for r in rows if r["passed"] == "YES")
+    logger.info("=" * 64)
+    logger.info("OVERALL: %d/%d PASSED (%.1f%%)", passed_total, total,
+                100.0 * passed_total / total if total else 0.0)
+
+    by_scenario: dict[str, list[dict]] = {}
+    for r in rows:
+        by_scenario.setdefault(r["scenario_id"], []).append(r)
+
+    for scenario_id, scenario_rows in sorted(by_scenario.items()):
+        p = sum(1 for r in scenario_rows if r["passed"] == "YES")
+        t = len(scenario_rows)
+        logger.info("  %s: %d/%d (%.1f%%) - %s",
+                    scenario_id, p, t, 100.0 * p / t if t else 0.0,
+                    scenario_rows[0]["description"])
+
+    # Detection rate over true alterations only (excludes E1 and E5,
+    # which are not "alterations" but a control case and an error case).
+    alteration_ids = {"E2", "E3", "E4", "E6"}
+    alteration_rows = [r for r in rows if r["scenario_id"] in alteration_ids]
+    alteration_passed = sum(1 for r in alteration_rows if r["passed"] == "YES")
+    n_alt = len(alteration_rows)
+    logger.info("=" * 64)
+    logger.info("Tasa de detección de alteraciones (E2,E3,E4,E6): %d/%d (%.2f%%)",
+                alteration_passed, n_alt,
+                100.0 * alteration_passed / n_alt if n_alt else 0.0)
+    logger.info("Output written to: %s", output)
 
 
 def _parse_args(argv=None):
     parser = argparse.ArgumentParser(
-        description="Run functional validation scenarios E1-E6 against the Tangle.",
+        description="Run functional validation scenarios E1-E6 against the "
+                    "Tangle, repeated N times for statistical significance.",
     )
+    parser.add_argument("--n", type=int, default=100,
+                        help="Number of repetitions (default: 100)")
     parser.add_argument("--output", type=Path,
                         default=Path("docs/results/scenarios.csv"))
-    parser.add_argument("--sensor-id", default="scenario_sensor")
+    parser.add_argument("--sensor-id-prefix", default="scenario_sensor")
     return parser.parse_args(argv)
 
 
@@ -182,7 +215,7 @@ def main(argv=None) -> int:
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
     args = _parse_args(argv)
-    run(args.output, args.sensor_id)
+    run(args.n, args.output, args.sensor_id_prefix)
     return 0
 
 
