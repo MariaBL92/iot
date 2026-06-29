@@ -56,7 +56,7 @@ def measure_one(iteration: int, sensor_id: str) -> dict:
     sensor_data = generate_sensor_data(sensor_id)
     payload = build_tangle_payload(sensor_data)
 
-    # T_reg: from the call to register_in_tangle until block_id returns.
+   # T_reg: tiempo transcurrido desde la llamada a register_in_tangle hasta que se devuelve el block_id.
     t0 = time.perf_counter()
     try:
         block_id = register_in_tangle(payload)
@@ -73,7 +73,7 @@ def measure_one(iteration: int, sensor_id: str) -> dict:
             "block_id":   "",
         }
 
-    # T_ver: from the call to verify_integrity until the verdict.
+    # T_ver: tiempo transcurrido desde la llamada a verify_integrity hasta la obtención del veredicto.
     t2 = time.perf_counter()
     try:
         verdict = verify_integrity(block_id, sensor_data, fetch_fn=fetch_block_data)
