@@ -1,8 +1,9 @@
 """
-Unit tests for tangle_writer.
+Pruebas unitarias para tangle_writer.
 
-The IOTA client is mocked, so these tests run without iota-sdk installed
-and without any network access.
+El cliente de IOTA se simula mediante un objeto *mock*, por lo que estas
+pruebas pueden ejecutarse sin tener instalado iota-sdk y sin necesidad
+de acceso a la red.
 """
 from __future__ import annotations
 import pytest
@@ -18,7 +19,7 @@ from src.iota.iota_client import dict_to_payload_hex
 
 @pytest.fixture(autouse=True)
 def fast_retries(monkeypatch):
-    """Make retries instantaneous so tests don't sleep 13 seconds on failures."""
+    """Hacer que los reintentos sean instantáneos para que las pruebas no esperen 13 segundos en caso de fallo."""
     monkeypatch.setattr("src.iota.tangle_writer.RETRY_DELAYS_SECONDS", (0, 0, 0))
 
 
