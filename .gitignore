@@ -1,12 +1,12 @@
-# Byte-compiled / optimized / DLL files
+# Archivos compilados en bytecode / optimizados / DLL
 __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
+# extensiones C 
 *.so
 
-# Distribution / packaging
+# Distribución / Empaquetado
 .Python
 build/
 develop-eggs/
@@ -27,8 +27,10 @@ share/python-wheels/
 MANIFEST
 
 # PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+#   Normalmente, estos archivos son generados por un script de Python
+#   a partir de una plantilla antes de que PyInstaller construya el
+#   ejecutable, con el fin de incorporar información como la fecha u
+#   otros datos.
 *.manifest
 *.spec
 
@@ -51,7 +53,7 @@ coverage.xml
 .pytest_cache/
 cover/
 
-# Translations
+# Traducciones
 *.mo
 *.pot
 
@@ -68,7 +70,7 @@ instance/
 # Scrapy stuff:
 .scrapy
 
-# Sphinx documentation
+# Documentación Sphinx 
 docs/_build/
 
 # PyBuilder
@@ -83,51 +85,62 @@ profile_default/
 ipython_config.py
 
 # pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
+#   En el caso de una biblioteca o paquete, es posible que desee
+#   ignorar estos archivos, ya que el código está pensado para
+#   ejecutarse en múltiples entornos. En caso contrario, inclúyalos
+#   en el control de versiones.
 # .python-version
 
 # pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
+#   Según pypa/pipenv#598, se recomienda incluir Pipfile.lock en el
+#   control de versiones. Sin embargo, en entornos colaborativos,
+#   cuando existen dependencias específicas de una plataforma o
+#   dependencias que no ofrecen compatibilidad multiplataforma,
+#   Pipenv puede instalar dependencias que no funcionen o no instalar
+#   todas las dependencias necesarias.
 #Pipfile.lock
 
 # UV
-#   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
+#   Al igual que Pipfile.lock, generalmente se recomienda incluir
+#   uv.lock en el control de versiones.
+#   Esta práctica es especialmente recomendable para paquetes binarios,
+#   ya que garantiza la reproducibilidad. En el caso de las bibliotecas,
+#   es más habitual no incluir este archivo en el control de versiones.
 #uv.lock
 
 # poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
+#   Al igual que Pipfile.lock, generalmente se recomienda incluir
+#   poetry.lock en el control de versiones.
+#   Esta práctica es especialmente recomendable para paquetes binarios,
+#   ya que garantiza la reproducibilidad. En el caso de las bibliotecas,
+#   es más común omitir este archivo del control de versiones.
+#
 #   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
 #poetry.lock
 
 # pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+#   Al igual que Pipfile.lock, generalmente se recomienda incluir
+#   pdm.lock en el control de versiones.
 #pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
+#   pdm almacena configuraciones de todo el proyecto en .pdm.toml,
+#   pero se recomienda no incluir este archivo en el control de
+#   versiones.
 #   https://pdm.fming.dev/latest/usage/project/#working-with-version-control
 .pdm.toml
 .pdm-python
 .pdm-build/
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+#P EP 582; utilizado, por ejemplo, por David-OConnor/pyflow y pdm-project/pdm.
 __pypackages__/
 
-# Celery stuff
+# Archivos de Celery
 celerybeat-schedule
 celerybeat.pid
 
-# SageMath parsed files
+#Archivos analizados por SageMath
 *.sage.py
 
-# Environments
+# Entornos virtuales
 .env
 .venv
 env/
@@ -136,14 +149,14 @@ ENV/
 env.bak/
 venv.bak/
 
-# Spyder project settings
+# Spyder: configuración del proyecto
 .spyderproject
 .spyproject
 
-# Rope project settings
+# Rope: configuración del proyecto
 .ropeproject
 
-# mkdocs documentation
+# Documentación mkdocs 
 /site
 
 # mypy
@@ -151,31 +164,36 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
-# Pyre type checker
+# Pyre: verificador de tipos
 .pyre/
 
-# pytype static type analyzer
+# Analizador estático de tipos pytype
 .pytype/
 
-# Cython debug symbols
+# Símbolos de depuración de Cython
 cython_debug/
 
 # PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
+# La plantilla específica de JetBrains se mantiene en un archivo
+# independiente, `JetBrains.gitignore`, que puede encontrarse en:
+# https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+# Este archivo puede añadirse al `.gitignore` global o integrarse en
+# este archivo. Como una opción más drástica (no recomendada), puede
+# descomentar la siguiente línea para ignorar por completo la carpeta
+
 #.idea/
 
-# Ruff stuff:
+# Configuración de Ruff:
 .ruff_cache/
 
-# PyPI configuration file
+# Archivo de configuración de PyPI
 .pypirc
 
-# Cursor  
-#  Cursor is an AI-powered code editor.`.cursorignore` specifies files/directories to 
-#  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
-#  refer to https://docs.cursor.com/context/ignore-files
+# Cursor
+# Cursor es un editor de código basado en inteligencia artificial.
+# El archivo `.cursorignore` define los archivos y directorios que se
+# excluyen de las funciones de IA, como el autocompletado y el análisis
+# de código. Se recomienda para evitar que datos sensibles sean
+# utilizados por estas funcionalidades.
 .cursorignore
 .cursorindexingignore
