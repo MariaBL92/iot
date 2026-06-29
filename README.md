@@ -1,8 +1,7 @@
-# IoT-IOTA Integrity
-
+# IoT-Integridad de datos mediante IOTA
 Verificación de integridad de datos IoT mediante registro de hashes en una Private Tangle de IOTA
 
-Prototipo experimental: simula sensores IoT, calcula hashes SHA-256 de sus lecturas, los registra en la red privada de IOTA y proporciona un módulo de verificación que detecta alteraciones comparando hashes.
+Prototipo experimental: simula sensore IoT, calcula hashes SHA-256 de sus lecturas, los registra en la red privada de IOTA y proporciona un módulo de verificación que detecta alteraciones comparando hashes.
 
 ## Arquitectura
 
@@ -50,7 +49,7 @@ cd hornet/private_tangle
 ./bootstrap.sh
 
 # Levantar nodos 
-./run.sh 
+./run.sh 4
 ```
 
 Verificar que está sano: abrí `http://localhost:8011` (credenciales: `admin` / `admin`). El indicador verde confirma que el coordinador está emitiendo milestones.
@@ -65,7 +64,7 @@ Una vez sano, el nodo REST API escucha en `http://localhost:14265`.
 El `.env` ya está configurado para apuntar al nodo local:
 
 ```
-IOTA_NODE_URL=http://localhost:14265
+IOTA_NODE_URL=(http://localhost:14265/api/core/v2/info)
 ```
 
 ## Uso completo (Capas 1 → 4)
@@ -150,7 +149,7 @@ iot
 ├── tests/
 │   ├── unit/
 │   └── integration/
-├── benchmarks/            # Fase 5
+├── benchmarks/            # Fase de pruebas
 ├── data/
 ├── docs/
 │   ├── results/
