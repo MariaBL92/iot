@@ -1,27 +1,22 @@
 """
-Functional validation scenarios E1-E6, repeated N times each for
-statistical significance.
+Escenarios de validación funcional E1–E6, repetidos N veces cada uno para obtener significancia estadística.
+Cada repetición registra una lectura sintética NUEVA de sensor en el Tangle y luego la verifica bajo cada uno de los 6 tipos de mutación (E1–E6), 
+con el fin de evaluar la capacidad de detección del sistema. La salida es un archivo CSV con una fila por cada par (repetición, escenario), 
+indicando si el veredicto obtenido coincidió con el veredicto esperado.
 
-Each repetition registers a FRESH synthetic sensor reading on the Tangle,
-then verifies it under each of the 6 mutation types (E1-E6) to test the
-detection capability of the system. The output is a CSV with one row per
-(repetition, scenario) pair indicating whether the actual verdict matched
-the expected verdict.
+Escenarios:
+E1 - Íntegro:                 datos sin modificar, se espera INTEGRO
+E2 - Alteración numérica:     temperatura modificada, se espera ALTERADO
+E3 - Alteración timestamp:    timestamp modificado, se espera ALTERADO
+E4 - Alteración sensor_id:    sensor_id modificado, se espera ALTERADO
+E5 - Bloque inexistente:      verificación contra un block_id inválido
+E6 - Manipulación de campo:   humedad modificada, se espera ALTERADO
 
-Scenarios:
-    E1 - Integro:                 unmutated data, expect INTEGRO
-    E2 - Alteración numérica:     temperature mutated, expect ALTERADO
-    E3 - Alteración timestamp:    timestamp mutated, expect ALTERADO
-    E4 - Alteración sensor_id:    sensor_id mutated, expect ALTERADO
-    E5 - Bloque inexistente:      verify against an invalid block_id
-    E6 - Manipulación de campo:   humidity mutated, expect ALTERADO
-
-Usage:
-    python -m benchmarks.run_scenarios --n 100
-    python -m benchmarks.run_scenarios --n 50 --output docs/results/scenarios_n50.csv
-
-The CSV (default: docs/results/scenarios.csv) has the columns:
-    repetition, scenario_id, description, expected, actual, passed, block_id
+Uso:
+python -m benchmarks.run_scenarios --n 100
+python -m benchmarks.run_scenarios --n 50 --output docs/results/scenarios_n50.csv
+El CSV, por defecto en docs/results/scenarios.csv, contiene las columnas:
+repetition, scenario_id, description, expected, actual, passed, block_id
 """
 from __future__ import annotations
 
@@ -42,11 +37,11 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Scenario (mutation) definitions
+# Definición de los escenarios (mutaciones)
 # ---------------------------------------------------------------------------
 
 def _mutations() -> list[dict]:
-    """Return the 6 mutation specifications, independent of any base reading."""
+    """Devuelve las especificaciones de las seis mutaciones, independientes de cualquier lectura base."""
     return [
         {
             "id": "E1",
@@ -94,7 +89,7 @@ def _mutations() -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Execution
+# Ejecución
 # ---------------------------------------------------------------------------
 
 def run(n: int, output: Path, sensor_id_prefix: str = "scenario_sensor") -> None:
@@ -159,7 +154,7 @@ def run(n: int, output: Path, sensor_id_prefix: str = "scenario_sensor") -> None
                         rep, n, scenario_id, expected, actual,
                         "PASS" if passed else "FAIL")
 
-    # Write CSV
+    #Generación del archivo CSV
     with output.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -183,8 +178,9 @@ def run(n: int, output: Path, sensor_id_prefix: str = "scenario_sensor") -> None
                     scenario_id, p, t, 100.0 * p / t if t else 0.0,
                     scenario_rows[0]["description"])
 
-    # Detection rate over true alterations only (excludes E1 and E5,
-    # which are not "alterations" but a control case and an error case).
+# Tasa de detección considerando únicamente las alteraciones reales
+# (excluye E1 y E5, ya que no representan "alteraciones", sino un caso
+# de control y un caso de error, respectivamente).
     alteration_ids = {"E2", "E3", "E4", "E6"}
     alteration_rows = [r for r in rows if r["scenario_id"] in alteration_ids]
     alteration_passed = sum(1 for r in alteration_rows if r["passed"] == "YES")
