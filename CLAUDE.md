@@ -6,11 +6,11 @@ Este archivo le da contexto a Claude Code sobre este proyecto. Léelo antes de h
 
 ## Qué es este proyecto
 
-**Prototipo experimental de un Trabajo Fin de Máster** que verifica la integridad de datos generados por sensores IoT registrando hashes SHA-256 en el Tangle de IOTA 2.0.
+**Prototipo experimental de un Trabajo Fin de Máster** que verifica la integridad de datos generados por sensores IoT registrando hashes SHA-256 en un Private Tangle de IOTA.
 
 - Todo es **simulación por software**: no hay hardware físico ni sensores reales.
 - El objetivo es **demostrar viabilidad técnica** y producir métricas (latencia, tasa de detección), no construir un producto productivo.
-- Stack: Python 3.11+, `paho-mqtt`, `iota-sdk`, Mosquitto, IOTA 2.0 Testnet.
+- Stack: Python 3.11+, `paho-mqtt`, `iota-sdk`, Mosquitto, Private Tangle IOTA .
 
 ## Arquitectura — cuatro capas
 
@@ -185,7 +185,7 @@ Si trabajas fuera de un venv en Ubuntu/Debian con PEP 668, necesitarás `--break
 ## Referencias
 
 - `README.md` — overview general y operaciones
-- `Bosquejo_Programacion_TFM.docx` — diseño detallado del código (si está en el repo)
+- `Bosquejo_Programacion_TFM.docx` — diseño detallado del código 
 - `Manual_Usuario.docx` — guía accesible para usuarios no técnicos
 - IOTA docs: https://wiki.iota.org/
 - paho-mqtt v2 docs: https://github.com/eclipse/paho.mqtt.python
