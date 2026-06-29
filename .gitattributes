@@ -1,2 +1,2 @@
-# Auto detect text files and perform LF normalization
+# Detectar automáticamente los archivos de texto y aplicar la normalización de finales de línea (LF).
 * text=auto
