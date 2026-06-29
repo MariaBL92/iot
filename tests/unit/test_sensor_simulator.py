@@ -1,4 +1,4 @@
-"""Unit tests for the sensor_simulator module."""
+"""Pruebas unitarias para el módulo sensor_simulator."""
 from __future__ import annotations
 import re
 from datetime import datetime
