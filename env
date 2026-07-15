@@ -1,11 +1,11 @@
-# MQTT broker configuration
+# Configuracionn del broker MQTT
 MQTT_BROKER=localhost
 MQTT_PORT=1883
 MQTT_TOPIC=iot/sensors
 
-# IOTA testnet configuration (used from Phase 3 onwards)
+# Configuracion de IOTA testnet configuration (used from Phase 3 onwards)
 IOTA_NODE_URL=http://localhost:14265
 IOTA_TAG=IOT-INTEGRITY
 
-# Local file paths
+# Rutas de archivos locales
 LOCAL_REGISTRY_PATH=data/local_registry.json
