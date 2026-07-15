@@ -161,18 +161,6 @@ iot
 └── .env.example
 ```
 
-## Fases
-
-| Fase | Estado | Descripción |
-|------|--------|-------------|
-| 0    | OK     | Setup del entorno |
-| 1    | OK     | Simulador IoT (Capa 1) |
-| 2    | OK     | Procesamiento y hash (Capa 2) |
-| 3    | OK     | Registro en Tangle (Capa 3) — private tangle local |
-| 4    | OK     | Verificación (Capa 4) |
-| 5    | OK     | Benchmarks y validación |
-| 6    | WIP    | Documentación final |
-
 ## Licencia
 
 Pendiente (uso académico).
