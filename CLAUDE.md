@@ -1,9 +1,5 @@
 # CLAUDE.md — Contexto para Claude Code
 
-Este archivo le da contexto a Claude Code sobre este proyecto. Léelo antes de hacer cualquier cambio.
-
----
-
 ## Qué es este proyecto
 
 **Prototipo experimental de un Trabajo Fin de Máster** que verifica la integridad de datos generados por sensores IoT registrando hashes SHA-256 en un Private Tangle de IOTA.
@@ -169,23 +165,7 @@ Si trabajas fuera de un venv en Ubuntu/Debian con PEP 668, necesitarás `--break
 
 ## Estado actual
 
-- ✅ Fases 1-5 implementadas (simulador, procesamiento, Tangle, verificador, benchmarks)
-- ⏳ Fase 6: documentación final
+- ✅ Fases 1-6 implementadas (simulador, procesamiento, Tangle, verificador, benchmarks, documentacion)
 - 91 tests unitarios pasando
 - Cobertura: hash_generator 100 %, payload_builder 100 %, integrity_checker 94 %, tangle_writer 89 %, local_registry 94 %
 
-## Antes de cerrar una sesión
-
-1. `make test` debe pasar
-2. Si tocaste código de un módulo crítico, `make test-cov` para verificar que no bajó la cobertura
-3. Si modificaste `requirements.txt`, prueba `pip install -r requirements.txt` en un venv limpio
-4. Si añadiste una operación nueva, documéntala en el `Makefile` y en `README.md`
-5. Tag de Git al cerrar una fase: `v0.X-fase-Y-nombre`
-
-## Referencias
-
-- `README.md` — overview general y operaciones
-- `Bosquejo_Programacion_TFM.docx` — diseño detallado del código 
-- `Manual_Usuario.docx` — guía accesible para usuarios no técnicos
-- IOTA docs: https://wiki.iota.org/
-- paho-mqtt v2 docs: https://github.com/eclipse/paho.mqtt.python
