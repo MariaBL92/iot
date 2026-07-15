@@ -102,31 +102,47 @@ make subscribe-no-tangle   # subscriber sin escribir al Tangle (status='pending'
 ## Mapa del repo
 
 ```
-iot
+iot/
 ├── src/
-│   ├── simulator/sensor_simulator.py    # Capa 1: generar_dato_sensor, bucle_publicación
+│   ├── simulator/
+│   │   └── sensor_simulator.py          # Capa 1: simulación del sensor
 │   ├── processor/
-│   │   ├── hash_generator.py            # CRÍTICO: json_canónico, generar_hash
-│   │   ├── payload_builder.py           # CRÍTICO: construir_payload_tangle (frontera de privacidad)
-│   │   ├── local_registry.py            # Clase RegistroLocal, escrituras atómicas
-│   │   └── mqtt_subscriber.py           # Orquestador: procesar_mensaje + ejecutar_suscriptor
+│   │   ├── hash_generator.py            # Capa 2: generación del hash SHA-256
+│   │   ├── payload_builder.py  # Capa 2: construcción del payload (frontera de privacidad)
+│   │   ├── local_registry.py            # Capa 2: registro local, escrituras atómicas
+│   │   └── mqtt_subscriber.py           # Capa 2: orquestador del flujo de procesamiento
 │   ├── iota/
-│   │   ├── iota_client.py               # Envoltorio SDK perezoso, utilidades hex (¡prefijo 0x!)
-│   │   └── tangle_writer.py             # registrar_en_tangle (reintentos), obtener_datos_bloque
-│   └── verifier/integrity_checker.py    # verificar_integridad, verificar_desde_registro
-├── tests/
-│   ├── unit/                            # Sin red, con objetos simulados (mocks)
-│   └── integration/                     # Con broker + IOTA (marcados @pytest.mark.integration)
+│   │   ├── iota_client.py               # Capa 3: configuración del cliente IOTA
+│   │   └── tangle_writer.py             # Capa 3: registro en Tangle con reintentos
+│   └── verifier/
+│       └── integrity_checker.py         # Capa 4: verificación de integridad
 ├── benchmarks/
-│   ├── measure_latency.py               # CSV con T_reg, T_ver
-│   ├── run_scenarios.py                 # CSV con veredictos E1-E6
-│   └── analyze_results.py               # Estadísticas + figuras
+│   ├── measure_latency.py               # Medición de T_reg y T_ver
+│   ├── run_scenarios.py                 # Evaluación de escenarios E1-E6
+│   └── analyze_results.py               # Generación de estadísticas y figuras
+├── tests/
+│   ├── unit/                            # Pruebas unitarias (sin red)
+│   └── integration/                     # Pruebas de integración (requieren broker + IOTA)
+├── docs/
+│   ├── diagrams/                        # Diagramas del sistema
+│   ├── results/
+│   │   ├── figures/
+│   │   │   ├── latency_boxplot.png      # Diagrama de cajas de latencias
+│   │   │   └── latency_histogram.png    # Histograma de latencias
+│   │   ├── latencies.csv                # Resultados de latencia por iteración
+│   │   ├── scenarios.csv                # Resultados de escenarios E1-E6
+│   │   └── summary.txt                  # Resumen estadístico
+│   ├── Guia_Funcionamiento.md           # Guía de funcionamiento del sistema
+│   └── Manual_de_Usuario.md             # Manual de usuario├── data/
+│   └── local_registry.json              # Registro local (generado en tiempo de ejecución)
+├── data/
+│   └── local_registry.json              # Registro local (generado en tiempo de ejecución)
 ├── verify_cli.py                        # Interfaz de línea de comandos del verificador
+├── Makefile                             # Comandos de operación del sistema
+├── requirements.txt                     # Dependencias del proyecto
 ├── pyproject.toml                       # Configuración de pytest y marcadores
-├── requirements.txt                     # paho-mqtt, iota-sdk, python-dotenv, pytest, matplotlib
-├── Makefile                             # Todas las operaciones documentadas
-├── .env.example                         # Plantilla; copiar a .env
-└── data/local_registry.json             # NO versionado, generado en tiempo de ejecución
+└── .env.example                         # Plantilla de configuración del entorno
+
 ```
 
 ## Trampas conocidas (gotchas)
