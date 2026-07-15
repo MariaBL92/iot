@@ -102,31 +102,31 @@ make subscribe-no-tangle   # subscriber sin escribir al Tangle (status='pending'
 ## Mapa del repo
 
 ```
-iot-iota-integrity/
+iot
 ├── src/
-│   ├── simulator/sensor_simulator.py    # Capa 1: generate_sensor_data, publish_loop
+│   ├── simulator/sensor_simulator.py    # Capa 1: generar_dato_sensor, bucle_publicación
 │   ├── processor/
-│   │   ├── hash_generator.py            # CRÍTICO: canonical_json, generate_hash
-│   │   ├── payload_builder.py           # CRÍTICO: build_tangle_payload (privacy boundary)
-│   │   ├── local_registry.py            # LocalRegistry class, atomic writes
-│   │   └── mqtt_subscriber.py           # Orquestador: process_message + run_subscriber
+│   │   ├── hash_generator.py            # CRÍTICO: json_canónico, generar_hash
+│   │   ├── payload_builder.py           # CRÍTICO: construir_payload_tangle (frontera de privacidad)
+│   │   ├── local_registry.py            # Clase RegistroLocal, escrituras atómicas
+│   │   └── mqtt_subscriber.py           # Orquestador: procesar_mensaje + ejecutar_suscriptor
 │   ├── iota/
-│   │   ├── iota_client.py               # Lazy SDK wrapper, hex helpers (0x prefix!)
-│   │   └── tangle_writer.py             # register_in_tangle (retries), fetch_block_data
-│   └── verifier/integrity_checker.py    # verify_integrity, verify_from_registry
+│   │   ├── iota_client.py               # Envoltorio SDK perezoso, utilidades hex (¡prefijo 0x!)
+│   │   └── tangle_writer.py             # registrar_en_tangle (reintentos), obtener_datos_bloque
+│   └── verifier/integrity_checker.py    # verificar_integridad, verificar_desde_registro
 ├── tests/
-│   ├── unit/                            # Sin red, con mocks
+│   ├── unit/                            # Sin red, con objetos simulados (mocks)
 │   └── integration/                     # Con broker + IOTA (marcados @pytest.mark.integration)
 ├── benchmarks/
 │   ├── measure_latency.py               # CSV con T_reg, T_ver
-│   ├── run_scenarios.py                 # CSV con verdicts E1-E6
-│   └── analyze_results.py               # Stats + figuras
-├── verify_cli.py                        # CLI raíz del verificador
-├── pyproject.toml                       # pytest config, markers
+│   ├── run_scenarios.py                 # CSV con veredictos E1-E6
+│   └── analyze_results.py               # Estadísticas + figuras
+├── verify_cli.py                        # Interfaz de línea de comandos del verificador
+├── pyproject.toml                       # Configuración de pytest y marcadores
 ├── requirements.txt                     # paho-mqtt, iota-sdk, python-dotenv, pytest, matplotlib
 ├── Makefile                             # Todas las operaciones documentadas
 ├── .env.example                         # Plantilla; copiar a .env
-└── data/local_registry.json             # NO versionado, generado en runtime
+└── data/local_registry.json             # NO versionado, generado en tiempo de ejecución
 ```
 
 ## Trampas conocidas (gotchas)
