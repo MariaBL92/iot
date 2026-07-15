@@ -8,7 +8,7 @@ addopts = [
     "-m", "not integration",
 ]
 markers = [
-    "integration: tests that require network/IOTA/MQTT broker (deselect with -m 'not integration')",
+    "integration: pruebas que requieren red/IOTA/broker MQTT (excluir con -m 'not integration",
 ]
 
 [tool.coverage.run]
