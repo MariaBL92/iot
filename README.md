@@ -16,7 +16,7 @@ Cuatro capas:
 
 - Python 3.11+
 - [Rust](https://www.rust-lang.org/tools/install) (requerido por `iota-sdk`)
-- [Mosquitto](https://mosquitto.org/download/) como broker MQTT
+- [Mosquitto](https://mosquitto.org/download/) como broker MQTT mediante el comando sudo apt install mosquitto mosquitto-clients
 - [Docker](https://www.docker.com/) + Docker Compose (para el private tangle local)
 
 > En Windows, se recomienda WSL2 para evitar problemas de compilación con `iota-sdk`.
