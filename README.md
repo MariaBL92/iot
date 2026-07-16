@@ -18,7 +18,7 @@ Cuatro capas:
 - [Rust](https://www.rust-lang.org/tools/install) (requerido por `iota-sdk`)
 - [Mosquitto](https://mosquitto.org/download/) como broker MQTT siguiendo las instrucciones de la página oficial y ejecutando adicionalmente el comando
   ```  sudo apt install mosquitto mosquitto-clients ``` para instalarlo y registralo de manera automáticamente como servicio del sistema.
-- [Docker](https://www.docker.com/) + Docker Compose (para el private tangle local)
+- [Docker](https://www.docker.com/) Desktop + Docker Compose (para el private tangle local)
 
 > En Windows, se recomienda WSL2 para evitar problemas de compilación con `iota-sdk`.
 
