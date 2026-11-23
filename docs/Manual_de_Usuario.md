@@ -216,6 +216,66 @@ make verify BLOCK_ID=0x1234abc...
 
 Resultado: **ALTERADO**. Las huellas no coinciden — la del Tangle es la original e inviolable; la recalculada refleja el cambio local. La diferencia revela la manipulación.
 
+## 9.3 Escenarios de validación (E1–E6)
+
+Los siguientes escenarios permiten comprobar que el sistema detecta cualquier modificación de los datos registrados. Se requiere que la Private Tangle esté en ejecución y que se haya realizado al menos una simulación (`make subscribe` y `make simulate`).
+
+### Preparación
+
+1. Crear una copia de seguridad del registro local (una sola vez, antes de alterar nada):
+
+```bash
+cp data/local_registry.json data/local_registry.json.bak
+```
+
+2. Mostrar el último registro y copiar su `block_id`:
+
+```bash
+python ver.py
+```
+
+Después de cada escenario de alteración, restaurar el registro original:
+
+```bash
+cp data/local_registry.json.bak data/local_registry.json
+```
+
+### Escenarios
+
+| ID | Escenario | Comando de alteración | Resultado esperado |
+|----|-----------|-----------------------|--------------------|
+| E1 | Dato íntegro | — | INTEGRO |
+| E2 | Alteración de valor numérico | `python alterar.py temperatura 30.5` | ALTERADO |
+| E3 | Alteración de timestamp | `python alterar.py timestamp 2026-01-01T00:00:00Z` | ALTERADO |
+| E4 | Alteración de sensor_id | `python alterar.py sensor sensor_99` | ALTERADO |
+| E5 | Bloque inexistente | Usar un `block_id` inválido | ERROR_CONTROLADO |
+| E6 | Manipulación local (dato y hash alterados) | `python alterar.py timestamp <valor>` y `python alterar.py hash <hash_falso>` | ALTERADO (manipulación detectada) |
+
+En cada escenario, tras la alteración, se verifica con:
+
+```bash
+python verify_cli.py --block-id <BLOCK_ID>
+```
+
+Para el escenario E5:
+
+```bash
+python verify_cli.py --block-id 0x0000000000000000000000000000000000000000000000000000000000000000
+```
+
+### Interpretación de resultados
+
+- **stored**: hash registrado en la Tangle de IOTA (referencia inmutable).
+- **computed**: hash recalculado a partir de los datos del registro local.
+- **match: True**: los datos no han sido modificados (INTEGRO).
+- **match: False**: los datos fueron alterados (ALTERADO).
+
+En el escenario E6 se simula un atacante que modifica el dato y además sustituye el hash del registro local por uno coherente con el dato falso. El sistema detecta igualmente la manipulación, ya que la verificación no utiliza el hash local, sino el registrado en IOTA.
+
+### Scripts de apoyo
+
+- `ver.py`: muestra el último registro de `data/local_registry.json`.
+- `alterar.py <campo> <valor>`: modifica un campo del último registro. Campos admitidos: `temperatura`, `humedad`, `timestamp`, `sensor` y `hash`.
 ---
 
 ## 10. Pruebas de validación
